@@ -9,9 +9,14 @@ pub Function : (OneValue, ast::Block) = <name:Atom> "{" <b:Block> "}" => (name, 
 pub Block : ast::Block = <l: Token*> => ast::Block { items : l };
 
 pub Token : ast::Token = {
-    "if" => ast::Token::If,
-    "return" => ast::Token::Return,
-    <v: Atom> => ast::Token::Call(v)
+    <v: Atom> => ast::Token::Call(v),
+    <l: Literal> => ast::Token::Literal(l)
 };
+
+pub Literal : OneValue = {
+    <n: Hex> => n
+}
+
+pub Hex : OneValue = <s:r"0x[a-fA-F0-9]*"> => OneValue::parse_hex(s).unwrap();
 
 pub Atom : OneValue = <s:r"[a-zA-Z][a-zA-Z0-9_]*"> => OneValue::from_string(s);
