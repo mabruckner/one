@@ -1,0 +1,12 @@
+[package]
+name = "one"
+version = "0.1.0"
+authors = ["Mitchell Bruckner <mbruckner807@gmail.com>"]
+build = "build.rs"
+
+[build-dependencies]
+lalrpop = "0.16.2"
+
+[dependencies]
+lalrpop-util = "0.16.2"
+regex = "0.2.1"
