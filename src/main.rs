@@ -1,10 +1,14 @@
 mod ast;
 mod one;
+mod logic;
 
 fn main() {
-    println!("{:?}", one::FunctionParser::new().parse("HELLO { }"));
-    println!("{:?}", one::FunctionParser::new().parse("HELLO { if return }"));
-    println!("{:?}", one::FunctionParser::new().parse("HELLO { hello if if return thing98098 }"));
-    println!("{:?}", one::FunctionParser::new().parse("hi { hello if if return thing98098 i 0x5ABc983 }"));
+    let mut program = ast::OneProgram::new();
+    program.ingest(one::ProgramParser::new().parse("main { 0x0a210a print }").unwrap());
+    println!("{:?}", program);
+    let mut state = logic::State::new();
+    state.step(&mut program);
+    state.step(&mut program);
+    state.step(&mut program);
 
 }

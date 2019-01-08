@@ -4,6 +4,8 @@ use ast;
 
 grammar;
 
+pub Program : Vec<(OneValue, ast::Block)> = <l: Function*> => l;
+
 pub Function : (OneValue, ast::Block) = <name:Atom> "{" <b:Block> "}" => (name, b);
 
 pub Block : ast::Block = <l: Token*> => ast::Block { items : l };

@@ -1,12 +1,19 @@
 use std::collections::HashMap;
 use std::num::ParseIntError;
 
-#[derive(Debug, Hash, Eq, PartialEq)]
+#[derive(Debug, Hash, Eq, PartialEq, Clone)]
 pub struct  OneValue { 
     pub data: Vec<u8>
 }
 
 impl OneValue {
+    pub fn as_string(&self) -> Option<String> {
+        match String::from_utf8(self.data.clone()) {
+            Ok(value) => Some(value),
+            _ => None
+        }
+
+    }
     pub fn from_string(s: &str) -> Self {
         OneValue {
             data:String::from(s).into_bytes()
@@ -47,6 +54,20 @@ pub struct Block {
 pub struct OneProgram {
     pub functions: HashMap<OneValue, Block>
 }
+
+impl OneProgram {
+    pub fn new() -> Self {
+        OneProgram {
+            functions: HashMap::new()
+        }
+    }
+    pub fn ingest(&mut self, functions: Vec<(OneValue, Block)>) {
+        for (val, blk) in functions {
+            self.functions.insert(val, blk);
+        }
+    }
+}
+
 
 
 
