@@ -13,6 +13,11 @@ pub enum BuiltinError {
     StackUnderflow
 }
 
+#[derive(Debug)]
+pub enum ProgramError {
+    Finished
+}
+
 impl State {
     pub fn new() -> Self {
         State {
@@ -21,12 +26,12 @@ impl State {
             skip: 0
         }
     }
-    pub fn step(&mut self, program: &mut OneProgram) {
+    pub fn step(&mut self, program: &mut OneProgram) -> Result<(), ProgramError> {
         if let Some((fname, pos)) = self.fstack.last().cloned() {
             let block = program.functions.get(&fname).unwrap(); // fix this... eventually
             if pos >= block.items.len() {
                 self.fstack.pop();
-                return
+                return Ok(())
             }
             if self.skip == 0 {
                 self.fstack.last_mut().map(|l| l.1 += 1);
@@ -35,13 +40,21 @@ impl State {
                     Token::Call(ref value) => match self.builtin(value) {
                         Some(Ok(())) => (),
                         Some(Err(err)) => panic!("{:?}", err),
-                        None => unimplemented!()
+                        None => {
+                            if pos == block.items.len() {
+                                self.fstack.pop().unwrap();
+                            }
+                            self.fstack.push((value.clone(), 0));
+                        }
                     }
                 }
             } else {
                 self.fstack.last_mut().map(|l| l.1 += 1);
                 self.skip -= 1;
             }
+            Ok(())
+        } else {
+            Err(ProgramError::Finished)
         }
     }
     fn builtin(&mut self, name: &OneValue) -> Option<Result<(), BuiltinError>> {
@@ -49,6 +62,22 @@ impl State {
         Some(match strname.as_ref().map(|n| n.as_str()) {
             Some(val) => match val {
                 "print" => self.print(),
+                "copy" => {
+                    match self.pop() {
+                        Ok(val) => {
+                        self.pstack.push(val.clone());
+                    self.pstack.push(val);
+                    Ok(())
+                        },
+                        Err(x) => Err(x)
+                    }
+                },
+                "drop" => {
+                    match self.pop() {
+                        Ok(_) => Ok(()),
+                        Err(x) => Err(x)
+                    }
+                },
                 _ => return None
             },
             _ => return None

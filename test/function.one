@@ -1,0 +1,8 @@
+main {
+func func func
+}
+
+func {
+    0x0A21
+    print
+}
