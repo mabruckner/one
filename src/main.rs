@@ -8,6 +8,7 @@ mod logic;
 fn main() {
     let mut program = ast::OneProgram::new();
     let mut parser = one::ProgramParser::new();
+    program.ingest(parser.parse(include_str!("std.one")).unwrap());
     for arg in args().skip(1) {
         println!("READING FILE {}", arg);
         let data = fs::read_to_string(arg).unwrap();

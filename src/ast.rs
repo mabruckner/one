@@ -14,6 +14,17 @@ impl OneValue {
         }
 
     }
+    pub fn as_usize(&self) -> Option<usize> {
+        if self.data.len() <= 4 {
+            let mut acc:usize = 0;
+            for i in 0..self.data.len() {
+                acc = acc + ((self.data[i] as usize) << (i*8));
+            }
+            Some(acc)
+        } else {
+            None
+        }
+    }
     pub fn from_string(s: &str) -> Self {
         OneValue {
             data:String::from(s).into_bytes()
@@ -36,6 +47,41 @@ impl OneValue {
             data: out
         })
 
+    }
+    pub fn add(&self, val: &OneValue) -> OneValue {
+        let mut acc: u16 = 0;
+        let mut out = Vec::new();
+        for i in 0..(self.data.len().max(val.data.len())) {
+            let (&a, &b) = (self.data.get(i).unwrap_or(&0), val.data.get(i).unwrap_or(&0));
+            acc = acc + a as u16 + b as u16;
+            out.push((acc & 0xff) as u8);
+            acc = acc >> 8;
+        }
+        if acc > 0 {
+            out.push(acc as u8);
+        } if acc < 0 {
+            out = vec![0];
+        }
+        return OneValue {
+            data: out
+        }
+    }
+    pub fn sub(&self, val: &OneValue) -> OneValue {
+        let mut acc: i16 = 0;
+        let mut out = Vec::new();
+        for i in 0..(self.data.len().max(val.data.len())) {
+            let (&a, &b) = (self.data.get(i).unwrap_or(&0), val.data.get(i).unwrap_or(&0));
+            acc = acc + a as i16 - b as i16;
+            out.push((acc & 0xff) as u8);
+            //println!("{:b}", acc);
+            acc = acc >> 8;
+        }
+        if acc > 0 {
+            out.push((acc & 0xff) as u8);
+        }
+        return OneValue {
+            data: out
+        }
     }
 }
 

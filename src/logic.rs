@@ -10,7 +10,8 @@ pub struct State {
 #[derive(Debug)]
 pub enum BuiltinError {
     FileNotFound,
-    StackUnderflow
+    StackUnderflow,
+    ValueTooLarge
 }
 
 #[derive(Debug)]
@@ -78,10 +79,38 @@ impl State {
                         Err(x) => Err(x)
                     }
                 },
+                "add" => self.add(),
+                "sub" => self.sub(),
+                "skip" => self.skip(),
+                "nonzerop" => self.nonzerop(),
                 _ => return None
             },
             _ => return None
         })
+    }
+    fn skip(&mut self) -> Result<(), BuiltinError> {
+        if let Some(num) = self.pop()?.as_usize() {
+            self.skip = num;
+            Ok(())
+        } else {
+            Err(BuiltinError::ValueTooLarge)
+        }
+    }
+    fn nonzerop(&mut self) -> Result<(), BuiltinError> {
+        if(self.pop()? == OneValue{data:vec![0]}) {
+            self.skip = 1;
+        }
+        Ok(())
+    }
+    fn add(&mut self) -> Result<(), BuiltinError> {
+        self.pop()?.add(&self.pop()?);
+        Ok(())
+    }
+    fn sub(&mut self) -> Result<(), BuiltinError> {
+        let rh = self.pop()?;
+        let res = self.pop()?.sub(&rh);
+        self.pstack.push(res);
+        Ok(())
     }
     fn pop(&mut self) -> Result<OneValue, BuiltinError> {
         match self.pstack.pop() {

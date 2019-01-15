@@ -1,0 +1,24 @@
+skip1 {
+    0x1
+    skip
+}
+
+skip2 {
+    0x2
+    skip
+}
+
+skip3 {
+    0x3
+    skip
+}
+
+zerop {
+    nonzerop
+    skip1
+    skip1
+}
+
+
+
+
