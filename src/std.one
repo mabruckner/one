@@ -19,6 +19,55 @@ zerop {
     skip1
 }
 
+nonzeror {
+    copy
+    nonzerop
+    skip2
+    drop
+    skip1
+}
+
+reverse {
+    0x0
+    0x1
+    swap
+}
+
+look {
+    copy
+    0x2 add
+    0x0
+    reverse
+    0x0
+    swap copy
+    0x0 0x2 swap
+    0x2 add
+    0x0
+    swap
+    drop
+}
 
 
+shove {
+    copy
+    0x1
+    swap
+    nonzeror
+    shove
+}
 
+chunklook {
+    copy
+    look
+    0x2 shove
+    0x2 add
+    reverse
+    0x1 sub
+    nonzerop
+    skip3
+    drop
+    drop
+    skip2
+    reverse
+    chunklook
+}

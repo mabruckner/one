@@ -82,6 +82,8 @@ impl State {
                 "add" => self.add(),
                 "sub" => self.sub(),
                 "skip" => self.skip(),
+                "size" => self.size(),
+                "swap" => self.swap(),
                 "nonzerop" => self.nonzerop(),
                 _ => return None
             },
@@ -112,15 +114,32 @@ impl State {
         self.pstack.push(res);
         Ok(())
     }
+    fn swap(&mut self) -> Result<(), BuiltinError> {
+        if let (Some(l0), Some(l1)) = (self.pop()?.as_usize(), self.pop()?.as_usize()) {
+            if l0 >= self.pstack.len() || l1 >=self.pstack.len() {
+                Err(BuiltinError::StackUnderflow)
+            } else {
+                let l = self.pstack.len() - 1;
+                self.pstack.swap(l-l0, l-l1);
+                Ok(())
+            }
+        } else {
+            Err(BuiltinError::ValueTooLarge)
+        }
+    }
     fn pop(&mut self) -> Result<OneValue, BuiltinError> {
         match self.pstack.pop() {
             Some(val) => Ok(val),
             None => Err(BuiltinError::StackUnderflow)
         }
     }
+    fn size(&mut self) -> Result<(), BuiltinError> {
+        let len = self.pstack.len();
+        self.pstack.push(OneValue::from_usize(len));
+        Ok(())
+    }
     fn print(&mut self) -> Result<(), BuiltinError> {
         io::stdout().write(&(self.pop()?.data));
         Ok(())
     }
-
 }

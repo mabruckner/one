@@ -25,6 +25,15 @@ impl OneValue {
             None
         }
     }
+    pub fn from_usize(u: usize) -> Self {
+        OneValue {
+            data: vec![
+                (u&0xff) as u8,
+                ((u>>8)&0xff) as u8,
+                ((u>>16)&0xff) as u8,
+                ((u>>24)&0xff) as u8]
+        }
+    }
     pub fn from_string(s: &str) -> Self {
         OneValue {
             data:String::from(s).into_bytes()

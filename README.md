@@ -23,7 +23,7 @@ them with their sum, `0x15`.
 
 ## flow control
 
-One has a single test operator built into the interpreter: `unzerop`, with another, `zerop` provided
+One has a single test operator built into the interpreter: `nonzerop`, with another, `zerop` provided
 by the one prelude.  Flow control in one is governed by the idea of skipping, a rudimentary way of
 dealing with one's lack of nested structure.  The one interpreter has a 'skip counter' that if
 nonzero decrements and passes over the current function call or literal without executing it.  The
@@ -32,7 +32,7 @@ nonzero, it sets the skip counter to one.
 
 ```
 dosomethingifnonzero {
-    unzerop
+    nonzerop
     dosomething
 }
 ```
@@ -48,7 +48,7 @@ loopdecrement {
     0x1
     sub
     dosomething
-    unzerop
+    nonzerop
     loopdecrement
 }
 
